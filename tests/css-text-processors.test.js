@@ -170,7 +170,7 @@ test("vertical segment media query recognizes tabletop geometry", function(t) {
 });
 
 test("segment parsing supports multi-digit counts and multiple whitespace characters", function(t) {
-  const css = "@media (horizontal-viewport-segments: 12) and (vertical-viewport-segments:\\n 3){.pane { display: block; }}";
+  const css = "@media (horizontal-viewport-segments: 12) and (vertical-viewport-segments:\n 3){.pane { display: block; }}";
   const result = getViewportSegmentCSSText(css);
   t.ok(result[3] && result[3][12], "recognizes multi-digit horizontal and whitespace-separated vertical counts");
   t.end();
