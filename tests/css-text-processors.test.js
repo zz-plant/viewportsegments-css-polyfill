@@ -142,3 +142,29 @@ test("replaceCSSEnvVariables should ignore white spaces inside the parentheses o
   );
   t.end();
 });
+
+
+test("viewport segment env replacements preserve unrelated env functions", function(t) {
+  const css = "padding: env(safe-area-inset-left); width: env(viewport-segment-width 0 0);";
+  t.equal(
+    replaceCSSEnvVariables(css, "viewport-segment-width 0 0", "420px"),
+    "padding: env(safe-area-inset-left); width: 420px;"
+  );
+  t.end();
+});
+
+test("horizontal segment media query can coexist with ordinary width queries", function(t) {
+  const css = "@media (horizontal-viewport-segments: 2) and (min-width: 800px){.pane { display: block; }}";
+  const matches = _processViewportSegmentsMediaBlock(css);
+  t.equal(matches.length, 1);
+  t.equal(matches[0][0], css);
+  t.end();
+});
+
+test("vertical segment media query recognizes tabletop geometry", function(t) {
+  const css = "@media (vertical-viewport-segments: 2){.controls { grid-row: 2; }}";
+  const matches = _processViewportSegmentsMediaBlock(css);
+  t.equal(matches.length, 1);
+  t.equal(matches[0][0], css);
+  t.end();
+});
