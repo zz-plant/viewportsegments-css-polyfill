@@ -1,6 +1,6 @@
 import test from "tape";
 
-import { replaceCSSEnvVariables, _processViewportSegmentsMediaBlock, _getMediaFeatures, _getMediaTypes } from "../src/utils/css-text-processors.js";
+import { replaceCSSEnvVariables, _processViewportSegmentsMediaBlock, _getMediaFeatures, _getMediaTypes, getViewportSegmentCSSText } from "../src/utils/css-text-processors.js";
 
 test(`_processViewportSegmentsMediaBlock should find media query blocks starting with @media and containing horizontal-viewport-segments `, function(t) {
   let viewportSegmentsMediaQuery = `@media type (horizontal-viewport-segments: 1) and (min-width: 900px){body { color: green; }}`;
@@ -140,5 +140,38 @@ test("replaceCSSEnvVariables should ignore white spaces inside the parentheses o
     expectedOutput,
     replaceCSSEnvVariables(sheetStr, "pre-defined-variable", "99px")
   );
+  t.end();
+});
+
+
+test("viewport segment env replacements preserve unrelated env functions", function(t) {
+  const css = "padding: env(safe-area-inset-left); width: env(viewport-segment-width 0 0);";
+  t.equal(
+    replaceCSSEnvVariables(css, "viewport-segment-width 0 0", "420px"),
+    "padding: env(safe-area-inset-left); width: 420px;"
+  );
+  t.end();
+});
+
+test("horizontal segment media query can coexist with ordinary width queries", function(t) {
+  const css = "@media (horizontal-viewport-segments: 2) and (min-width: 800px){.pane { display: block; }}";
+  const matches = _processViewportSegmentsMediaBlock(css);
+  t.equal(matches.length, 1);
+  t.equal(matches[0][0], css);
+  t.end();
+});
+
+test("vertical segment media query recognizes tabletop geometry", function(t) {
+  const css = "@media (vertical-viewport-segments: 2){.controls { grid-row: 2; }}";
+  const matches = _processViewportSegmentsMediaBlock(css);
+  t.equal(matches.length, 1);
+  t.equal(matches[0][0], css);
+  t.end();
+});
+
+test("segment parsing supports multi-digit counts and multiple whitespace characters", function(t) {
+  const css = "@media (horizontal-viewport-segments: 12) and (vertical-viewport-segments:\n 3){.pane { display: block; }}";
+  const result = getViewportSegmentCSSText(css);
+  t.ok(result[3] && result[3][12], "recognizes multi-digit horizontal and whitespace-separated vertical counts");
   t.end();
 });
