@@ -5,8 +5,8 @@ const VIEWPORT_SEGMENT_MEDIA_BLOCK_REGEXP_STR = `(\\s*)(@media.*?\\b${VIEWPORT_S
 
 const MEDIA_FEATURES_REGEXP = /\((.*?)\)/gi;
 const MEDIA_TYPES_REGEXP = /@media[^\(]+/gi;
-const VIEWPORT_SEGMENT_HOR_REGEXP = /(horizontal-viewport-segments:)\s?(\d)/gi;
-const VIEWPORT_SEGMENT_VER_REGEXP = /(vertical-viewport-segments:)\s?(\d)/gi;
+const VIEWPORT_SEGMENT_HOR_REGEXP = /(horizontal-viewport-segments:)\s*(\d+)/gi;
+const VIEWPORT_SEGMENT_VER_REGEXP = /(vertical-viewport-segments:)\s*(\d+)/gi;
 
 const cssEnvVariableRegExpMaker = variable => {
   return new RegExp(`env\\(\\s*${variable}\\s*\\)`, "gi");
